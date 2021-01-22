@@ -3,6 +3,8 @@ package com.barrera.sqlite;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private MaterialButton btnLogin, btnRegister;
     private EditText eTxtEmail, eTxtPassword, eTxtPasswordConfirm, eTxtName, eTxtUsername;
+    private RadioGroup rGroup;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
             String email = eTxtEmail.getText().toString();
             String name = eTxtName.getText().toString();
             String username = eTxtUsername.getText().toString();
+            String genre = ((RadioButton) findViewById(rGroup.getCheckedRadioButtonId())).getText().toString();
 
             if (pass.isEmpty() || passConfirm.isEmpty() || email.isEmpty() || name.isEmpty() || username.isEmpty()) {
                 Toast.makeText(this, "Todos los campos deben ser diligenciados.", Toast.LENGTH_SHORT).show();
@@ -39,16 +44,23 @@ public class RegisterActivity extends AppCompatActivity {
                 if (!pass.equals(passConfirm)) {
                     Toast.makeText(this, "Las contraseñas deben ser identicas.", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "Registro exitoso, inicie sesión", Toast.LENGTH_SHORT).show();
-                    Intent login = new Intent(this, LoginActivity.class);
-                    startActivity(login);
-                    finish();
+                    boolean isSave = db.insertUser(name, username, email, pass, genre);
+                    if (isSave) {
+                        Toast.makeText(this, "Registro exitoso, inicie sesión", Toast.LENGTH_SHORT).show();
+                        Intent login = new Intent(this, LoginActivity.class);
+                        startActivity(login);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "El registro no se pudo guardar, intente nuevamente.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
     }
 
     private void init() {
+        db = new DatabaseHelper(this);
+
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
         eTxtEmail = findViewById(R.id.email);
@@ -56,5 +68,6 @@ public class RegisterActivity extends AppCompatActivity {
         eTxtPasswordConfirm = findViewById(R.id.password_confirm);
         eTxtUsername = findViewById(R.id.username);
         eTxtName = findViewById(R.id.name);
+        rGroup = findViewById(R.id.radioGroup);
     }
 }
