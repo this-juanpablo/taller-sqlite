@@ -27,9 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void updateMyDatabase(SQLiteDatabase db, int newVersion) {
-        if (DB_VERSION != 1) {
-            db.execSQL("CREATE TABLE USER (_id INTEGER PRIMARY KEY AUTOINCREMENT, EMAIL TEXT,  NAME TEXT, USERNAME TEXT, PASSWORD TEXT, GENRE TEXT) ");
-        }
+        db.execSQL("CREATE TABLE IF NOT EXISTS USER (_id INTEGER PRIMARY KEY AUTOINCREMENT, EMAIL TEXT,  NAME TEXT, USERNAME TEXT, PASSWORD TEXT, GENRE TEXT) ");
     }
 
     public boolean insertUser(String name, String username, String email, String password, String genre) {
